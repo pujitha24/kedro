@@ -221,7 +221,7 @@ CONFIG_LOADER_ARGS = {
 }
 ```
 
-These custom resolvers are then registered using `OmegaConf.register_new_resolver()` internally and can be used in any of the
+These custom resolvers are then registered using `OmegaConf.register_resolver()` internally and can be used in any of the
 configuration files in your project. To pass keyword arguments such as `use_cache` or `replace` on to
 [`OmegaConf.register_new_resolver()`](https://omegaconf.readthedocs.io/en/2.3_branch/custom_resolvers.html#custom-resolvers), give the
 resolver as a `(callable, kwargs)` tuple instead of a plain callable:

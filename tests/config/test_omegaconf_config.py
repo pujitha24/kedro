@@ -6,6 +6,7 @@ import json
 import os
 import re
 import subprocess
+import warnings
 import zipfile
 from pathlib import Path
 
@@ -909,6 +910,21 @@ class TestOmegaConfigLoader:
         # cached result, while the uncached one runs again for every interpolation
         assert params["cached1"] == params["cached2"]
         assert params["uncached1"] != params["uncached2"]
+
+    def test_no_deprecated_resolver_registration_warning(self, tmp_path):
+        """Registering resolvers must not emit omegaconf's `register_new_resolver`
+        deprecation warning (omegaconf>=2.4)."""
+        _write_yaml(tmp_path / _BASE_ENV / "parameters.yml", {"a": "${custom:1}"})
+        (tmp_path / _DEFAULT_RUN_ENV).mkdir()
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            conf = OmegaConfigLoader(
+                str(tmp_path),
+                base_env=_BASE_ENV,
+                default_run_env=_DEFAULT_RUN_ENV,
+                custom_resolvers={"custom": lambda x: x},
+            )
+            assert conf["parameters"]["a"] == 1
 
     def test_globals(self, tmp_path):
         globals_params = tmp_path / _BASE_ENV / "globals.yml"
